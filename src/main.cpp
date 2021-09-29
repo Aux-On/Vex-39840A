@@ -62,11 +62,13 @@ using namespace vex;
 
 competition Competition;
 
+// Motors for wheels and arms
 motor FrontRightMotor = motor(PORT1);
 motor RearLeftMotor = motor(PORT2);
 motor RearRightMotor = motor(PORT9);
 motor FrontLeftMotor = motor(PORT10);
 
+// Motor groups of wheels and arms
 motor_group Movement = motor_group(RearLeftMotor, RearRightMotor);
 motor_group ArmMotors = motor_group(FrontLeftMotor, FrontRightMotor);
 
