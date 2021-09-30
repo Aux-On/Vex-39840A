@@ -1,146 +1,108 @@
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// Drivetrain           drivetrain    1, 10           
-// MotorGroup2          motor_group   2, 9            
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// Drivetrain           drivetrain    1, 10           
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// Motor1               motor         1               
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Motor10              motor         10              
-// Controller1          controller                    
-// Motor1               motor         1               
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Motor9               motor         9               
-// Motor10              motor         10              
-// Controller1          controller                    
-// Motor1               motor         1               
-// ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
-/*    Author:       C:\Users\VG                                               */
-/*    Created:      Fri Sep 24 2021                                           */
-/*    Description:  V5 project                                                */
+/*    Author:       VEX                                                       */
+/*    Created:      Thu Sep 26 2019                                           */
+/*    Description:  Competition Template                                      */
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
-// Motor2               motor         2               
-// Motor9               motor         9               
-// Motor10              motor         10              
+// Drivetrain           drivetrain    2, 9            
 // Controller1          controller                    
-// Motor1               motor         1               
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
-
-using namespace vex;
-
+#include <cmath> //std::abs
+// A global instance of competition
 competition Competition;
 
-// Motors for wheels and arms
-motor FrontRightMotor = motor(PORT1);
-motor RearLeftMotor = motor(PORT2);
-motor RearRightMotor = motor(PORT9);
-motor FrontLeftMotor = motor(PORT10);
+// define your global instances of motors and other devices here
 
-// Motor groups of wheels and arms
-motor_group Movement = motor_group(RearLeftMotor, RearRightMotor);
-motor_group ArmMotors = motor_group(FrontLeftMotor, FrontRightMotor);
+/*---------------------------------------------------------------------------*/
+/*                          Pre-Autonomous Functions                         */
+/*                                                                           */
+/*  You may want to perform some actions before the competition starts.      */
+/*  Do them in the following function.  You must return from this function   */
+/*  or the autonomous and usercontrol tasks will not be started.  This       */
+/*  function is only called once after the V5 has been powered on and        */
+/*  not every time that the robot is disabled.                               */
+/*---------------------------------------------------------------------------*/
 
-controller Controller = controller();
+void pre_auton(void) {
+  // Initializing Robot Configuration. DO NOT REMOVE!
+  vexcodeInit();
 
-const float WHEEL_DIAMETER = 4; // inches
-const float WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * 3.1416;
-const float GEAR_RATIO = 0.5; // 0.5 turn of motor = 1 turn of wheel
-const int  AUTON_DRIVE_PCT = 50; // motors at 50% power during auton
-const float TURNING_DIAMETER = 19.0;
-
-void driveForward( float inches ) {
-    float inchesPerDegree = WHEEL_CIRCUMFERENCE / 360;
-    float degrees = inches / inchesPerDegree;
-    // startRotate doesn't wait for completion
-    // this way, the other wheel can turn at same time
-    RearLeftMotor.startRotateFor(
-        degrees * GEAR_RATIO, rotationUnits::deg, 
-        AUTON_DRIVE_PCT, velocityUnits::pct
-    );
-    RearRightMotor.rotateFor(
-        degrees * GEAR_RATIO, rotationUnits::deg,
-        AUTON_DRIVE_PCT, velocityUnits::pct
-    );
+  // All activities that occur before the competition starts
+  // Example: clearing encoders, setting servo positions, ...
 }
 
-void turn( float degrees ) {
-    // Note: +90 degrees is a right turn
-    float turningRatio = TURNING_DIAMETER / WHEEL_DIAMETER;
-    float wheelDegrees = turningRatio * degrees;    
-    // Divide by two because each wheel provides half the rotation
-    RearLeftMotor.startRotateFor(
-        wheelDegrees * GEAR_RATIO / 2, rotationUnits::deg, 
-        AUTON_DRIVE_PCT, velocityUnits::pct
-    );
-    RearRightMotor.rotateFor(
-        wheelDegrees * GEAR_RATIO / 2, rotationUnits::deg,
-        AUTON_DRIVE_PCT, velocityUnits::pct
-    );
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*                              Autonomous Task                              */
+/*                                                                           */
+/*  This task is used to control your robot during the autonomous phase of   */
+/*  a VEX Competition.                                                       */
+/*                                                                           */
+/*  You must modify the code to add your own robot specific commands here.   */
+/*---------------------------------------------------------------------------*/
+
+void autonomous(void) {
+  // ..........................................................................
+  // Insert autonomous user code here.
+  // ..........................................................................
 }
 
-void pre_auton(void){
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*                              User Control Task                            */
+/*                                                                           */
+/*  This task is used to control your robot during the user control phase of */
+/*  a VEX Competition.                                                       */
+/*                                                                           */
+/*  You must modify the code to add your own robot specific commands here.   */
+/*---------------------------------------------------------------------------*/
 
-}
+void usercontrol(void) {
+  // User control code here, inside the loop
+  //Settings
+  double turnImportance = 1;
 
-void autonomous(void){
+  while (1) {
+    //wheel motors
+    motor LeftMotor = motor(PORT2);
+    motor RightMotor = motor(PORT9);
 
-  //comment to delete
+    //Value of joystick positions
+    double turnVal = Controller1.Axis1.position(percent);
+    double forwardVal = Controller1.Axis3.position(percent);
 
-}
+    //Converts percentage to voltage
+    double turnVolts = turnVal * 0.12;
+    double forwardVolts = forwardVal * 0.12 * (1 - (std::abs(turnVolts)/12.0) * turnImportance);
 
-void usercontrol(void){
-  while(1){
-    // motor movement: use axis 3 to move the wheels, axis 2 to move the arms
-    Movement.spin(directionType::fwd, Controller.Axis3.position(), velocityUnits::pct);
-    ArmMotors.spin(directionType::fwd, Controller.Axis2.position(), velocityUnits::pct);
-
-
-    task::sleep(20);
+    LeftMotor.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
+    RightMotor.spin(forward, forwardVolts + turnVolts, voltageUnits::volt);
+    wait(20, msec); // Sleep the task for a short amount of time to
+                    // prevent wasted resources.
   }
 }
 
-
+//
+// Main will set up the competition functions and callbacks.
+//
 int main() {
-  // Initializing Robot Configuration. DO NOT REMOVE!
-  vexcodeInit();
+  // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
 
+  // Run the pre-autonomous function.
   pre_auton();
 
-  while(1){
-    task::sleep(100);
+  // Prevent main from exiting with an infinite loop.
+  while (true) {
+    wait(100, msec);
   }
 }
