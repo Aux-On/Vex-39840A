@@ -12,12 +12,17 @@
 // [Name]               [Type]        [Port(s)]
 // Drivetrain           drivetrain    2, 9            
 // Controller1          controller                    
+// ArmGroup             motor_group   1, 10           
+// PotentiometerA       pot           A               
 // ---- END VEXCODE CONFIGURED DEVICES ----
-
+#include <iostream>
 #include "vex.h"
 #include <cmath> //std::abs
 // A global instance of competition
 competition Competition;
+
+//Constants
+int32_t InitPointDeg;
 
 // define your global instances of motors and other devices here
 
@@ -34,6 +39,7 @@ competition Competition;
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
+  InitPointDeg = PotentiometerA.angle(degrees);
 
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
@@ -71,6 +77,9 @@ void usercontrol(void) {
   double turnImportance = 1;
 
   while (1) {
+    Brain.Screen.print(PotentiometerA.angle(degrees)); 
+    Brain.Screen.newLine();
+
     //wheel motors
     motor LeftMotor = motor(PORT2);
     motor RightMotor = motor(PORT9);
@@ -85,6 +94,14 @@ void usercontrol(void) {
 
     LeftMotor.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
     RightMotor.spin(forward, forwardVolts + turnVolts, voltageUnits::volt);
+
+    if (Controller1.ButtonL2.pressing() == true){
+        ArmGroup.spin(forward, 150, vex::velocityUnits::pct);
+    }else if (Controller1.ButtonL1.pressing() == true && PotentiometerA.angle(degrees) > 0){
+        ArmGroup.spin(reverse, 150, vex::velocityUnits::pct);
+    }else{
+      ArmGroup.stop();
+    }
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
   }
