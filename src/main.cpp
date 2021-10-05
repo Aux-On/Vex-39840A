@@ -77,7 +77,7 @@ void usercontrol(void) {
   double turnImportance = 1;
 
   while (1) {
-    Brain.Screen.print(PotentiometerA.angle(degrees)); 
+    Brain.Screen.print(PotentiometerA.angle(degrees) - InitPointDeg); 
     Brain.Screen.newLine();
 
     //wheel motors
@@ -95,10 +95,12 @@ void usercontrol(void) {
     LeftMotor.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
     RightMotor.spin(forward, forwardVolts + turnVolts, voltageUnits::volt);
 
+    int control;
     if (Controller1.ButtonL2.pressing() == true){
         ArmGroup.spin(forward, 150, vex::velocityUnits::pct);
-    }else if (Controller1.ButtonL1.pressing() == true && PotentiometerA.angle(degrees) > 0){
-        ArmGroup.spin(reverse, 150, vex::velocityUnits::pct);
+    }else if (Controller1.ButtonL1.pressing() == true && PotentiometerA.angle(degrees) - InitPointDeg > 0){
+        control = abs(PotentiometerA.angle(degrees) - InitPointDeg) * 0.1;
+        ArmGroup.spin(reverse, 150 * control, vex::velocityUnits::pct);
     }else{
       ArmGroup.stop();
     }
