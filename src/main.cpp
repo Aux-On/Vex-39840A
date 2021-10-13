@@ -99,7 +99,7 @@ void usercontrol(void) {
     if (Controller1.ButtonL2.pressing() == true){
         ArmGroup.spin(forward, 150, vex::velocityUnits::pct);
     }else if (Controller1.ButtonL1.pressing() == true && PotentiometerA.angle(degrees) - InitPointDeg > 0){
-        control = abs(PotentiometerA.angle(degrees) - InitPointDeg) * 0.1;
+        control = std::abs(PotentiometerA.angle(degrees) - InitPointDeg) * 0.1;
         ArmGroup.spin(reverse, 150 * control, vex::velocityUnits::pct);
     }else{
       ArmGroup.stop();
