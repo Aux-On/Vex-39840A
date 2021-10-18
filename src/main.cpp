@@ -35,7 +35,8 @@ int32_t InitPointDeg;
 /*  function is only called once after the V5 has been powered on and        */
 /*  not every time that the robot is disabled.                               */
 /*---------------------------------------------------------------------------*/
-
+motor LeftMotor = motor(PORT2);
+motor RightMotor = motor(PORT9);
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
@@ -54,11 +55,35 @@ void pre_auton(void) {
 /*                                                                           */
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
-
 void autonomous(void) {
+  int error;
+
+  int target[3];
+
+  // in inches
+  target[0] = 72;
+  target[1] = 72;
+  target[2] = 72;
+
+  // diameter of wheel is 4 inches
+  // circumfrence is about 12.56
+
+
+  for (int i = 0; i < sizeof(target); i++){
+    long motorposition = (LeftMotor.position(degrees) + RightMotor.position(degrees))/2;
+    int motordistance = (motorposition/360) * 12.56;
+
+    error = target[i] - motordistance;
+
+    while(error > 0.01){
+      LeftMotor.spin(forward, 100 * error / target[i], vex::velocityUnits::pct);
+      RightMotor.spin(forward, 100 * error / target[i], vex::velocityUnits::pct);
+    }
+  }
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
+  
 }
 
 /*---------------------------------------------------------------------------*/
@@ -81,8 +106,7 @@ void usercontrol(void) {
     Brain.Screen.newLine();
 
     //wheel motors
-    motor LeftMotor = motor(PORT2);
-    motor RightMotor = motor(PORT9);
+
 
     //Value of joystick positions
     double turnVal = -Controller1.Axis1.position(percent);
