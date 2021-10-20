@@ -56,22 +56,22 @@ void pre_auton(void) {
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 void autonomous(void) {
-  int error;
+  double error;
 
-  int target[3];
+  double target[3];
 
   // in inches
-  target[0] = 72;
-  target[1] = 72;
-  target[2] = 72;
+  target[0] = 73;
+  target[1] = 48;
+  target[2] = 48;
 
   // diameter of wheel is 4 inches
   // circumfrence is about 12.56
 
 
   for (int i = 0; i < sizeof(target); i++){
-    long motorposition = (LeftMotor.position(degrees) + RightMotor.position(degrees))/2;
-    int motordistance = (motorposition/360) * 12.56;
+    long motorposition = (LeftMotor.position(degrees) + RightMotor.position(degrees))/2; // average of two motors
+    long motordistance = (motorposition/360) * 12.56;
 
     error = target[i] - motordistance;
 
@@ -79,6 +79,7 @@ void autonomous(void) {
       LeftMotor.spin(forward, 100 * error / target[i], vex::velocityUnits::pct);
       RightMotor.spin(forward, 100 * error / target[i], vex::velocityUnits::pct);
     }
+    
   }
   // ..........................................................................
   // Insert autonomous user code here.
