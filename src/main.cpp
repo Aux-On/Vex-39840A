@@ -94,6 +94,8 @@ void autonomous(void) {
       angleerror = targetangle - turnamount;
       turnpower = angleerror * 0.5;
     }
+    ArmGroup.spinFor(forward, 1, seconds);
+    ArmGroup.spinFor(reverse, 1, seconds);
   }
   // ..........................................................................
   // Insert autonomous user code here.
@@ -121,7 +123,8 @@ void usercontrol(void) {
     Brain.Screen.newLine();
 
     //wheel motors
-
+    motor LeftMotor = motor(PORT2);
+    motor RightMotor = motor(PORT9);
 
     //Value of joystick positions
     double turnVal = -Controller1.Axis1.position(percent);
@@ -136,10 +139,10 @@ void usercontrol(void) {
 
     int control;
     if (Controller1.ButtonL2.pressing() == true){
-        ArmGroup.spin(forward, 150, vex::velocityUnits::pct);
-    }else if (Controller1.ButtonL1.pressing() == true && PotentiometerA.angle(degrees) - InitPointDeg > 0){
+        ArmGroup.spin(reverse, 150, vex::velocityUnits::pct);
+    }else if (Controller1.ButtonL1.pressing() == true && PotentiometerA.angle(degrees) - InitPointDeg >= 0){
         control = std::abs(PotentiometerA.angle(degrees) - InitPointDeg) * 0.1;
-        ArmGroup.spin(reverse, 150 * control, vex::velocityUnits::pct);
+        ArmGroup.spin(forward, 150 * control, vex::velocityUnits::pct);
     }else{
       ArmGroup.stop();
     }
@@ -147,6 +150,10 @@ void usercontrol(void) {
                     // prevent wasted resources.
   }
 }
+
+//
+// Main will set up the competition functions and callbacks.
+
 
 //
 // Main will set up the competition functions and callbacks.
