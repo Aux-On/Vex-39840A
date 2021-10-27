@@ -22,7 +22,7 @@
 competition Competition;
 
 //Constants
-int32_t InitPointDeg;
+double InitPointDeg;
 
 // define your global instances of motors and other devices here
 
@@ -137,15 +137,29 @@ void usercontrol(void) {
     LeftMotor.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
     RightMotor.spin(forward, forwardVolts + turnVolts, voltageUnits::volt);
 
-    int control;
-    if (Controller1.ButtonL2.pressing() == true){
+    std::cout << "IntPoint: " << ArmGroup.position(degrees) << std::endl;
+    std::cout << "Actual Value " << PotentiometerA.angle(degrees) << std::endl;
+
+    //int control;
+    if (Controller1.ButtonB.pressing() == true){
+    if (Controller1.ButtonL2.pressing() == true ){
         ArmGroup.spin(reverse, 150, vex::velocityUnits::pct);
-    }else if (Controller1.ButtonL1.pressing() == true && PotentiometerA.angle(degrees) - InitPointDeg >= 0){
-        control = std::abs(PotentiometerA.angle(degrees) - InitPointDeg) * 0.1;
-        ArmGroup.spin(forward, 150 * control, vex::velocityUnits::pct);
+    }else if (Controller1.ButtonL1.pressing() == true){
+        //control = std::abs(PotentiometerA.angle(degrees) - InitPointDeg) * 0.1;
+        ArmGroup.spin(forward, 150, vex::velocityUnits::pct);
     }else{
       ArmGroup.stop();
     }
+    }
+    if (Controller1.ButtonL2.pressing() == true ){
+        ArmGroup.spin(reverse, 150, vex::velocityUnits::pct);
+    }else if (Controller1.ButtonL1.pressing() == true){
+        //control = std::abs(PotentiometerA.angle(degrees) - InitPointDeg) * 0.1;
+        ArmGroup.spin(forward, 150, vex::velocityUnits::pct);
+    }else{
+      ArmGroup.stop();
+    }
+  
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
   }
