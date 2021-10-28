@@ -137,10 +137,12 @@ void usercontrol(void) {
     LeftMotor.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
     RightMotor.spin(forward, forwardVolts + turnVolts, voltageUnits::volt);
 
-    std::cout << "IntPoint: " << ArmGroup.position(degrees) << std::endl;
-    std::cout << "Actual Value " << PotentiometerA.angle(degrees) << std::endl;
+   std::cout << "Motor Degrees:" << ArmGroup.position(degrees) << std::endl;
+   // std::cout << "Actual Value " << PotentiometerA.angle(degrees) << std::endl;
 
+//////////////////////////////////////////////////
     //int control;
+    /*
     if (Controller1.ButtonB.pressing() == true){
     if (Controller1.ButtonL2.pressing() == true ){
         ArmGroup.spin(reverse, 150, vex::velocityUnits::pct);
@@ -150,10 +152,15 @@ void usercontrol(void) {
     }else{
       ArmGroup.stop();
     }
+    
+
     }
-    if (Controller1.ButtonL2.pressing() == true ){
+    */
+//////////////////////////////////////////////////////////
+
+    if (Controller1.ButtonL2.pressing() == true && (ArmGroup.position(degrees) > -35 || Controller1.ButtonB.pressing() == true)){
         ArmGroup.spin(reverse, 150, vex::velocityUnits::pct);
-    }else if (Controller1.ButtonL1.pressing() == true){
+    }else if (Controller1.ButtonL1.pressing() == true && (ArmGroup.position(degrees) < 0 || Controller1.ButtonB.pressing() == true)){
         //control = std::abs(PotentiometerA.angle(degrees) - InitPointDeg) * 0.1;
         ArmGroup.spin(forward, 150, vex::velocityUnits::pct);
     }else{
