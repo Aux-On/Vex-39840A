@@ -56,50 +56,83 @@ void pre_auton(void) {
 /*                                                                           */
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
-void autonomous(void) {
-  double error;
 
-  double target[3];
-  double targetangle;
-  double turnamount;
-  double angleerror;
-  double turnpower;
-  // in inches
-  target[0] = 73;
-  target[1] = 48;
-  target[2] = 48;
-  targetangle = (atan(1/6) * 180) / M_PI;
+void findColor(){
+  Brain.Screen.clearScreen();
+  Brain.Screen.setOrigin(1,1);
+  Brain.Screen.drawRectangle(0,0,316,212);
 
+  Vision5.takeSnapshot(Vision5__SIG_1);
 
-  // diameter of wheel is 4 inches
-  // circumfrence is about 12.56
-
-
-  for (int i = 0; i < sizeof(target); i++){
-    long motorposition = (LeftMotor.position(degrees) + RightMotor.position(degrees))/2; // average of two motors
-    long motordistance = (motorposition/360) * 12.56;
-
-    error = target[i] - motordistance;
-    turnamount = LeftMotor.position(degrees) - RightMotor.position(degrees);
-    angleerror = targetangle - turnamount;
-    turnpower = angleerror * 0.5;
-    while(error > 0.01 && angleerror > 0.01){
-      LeftMotor.spin(forward, 100 * error / target[i] + turnpower, vex::velocityUnits::pct);
-      RightMotor.spin(forward, 100 * error / target[i] - turnpower, vex::velocityUnits::pct);
-
-      motorposition = (LeftMotor.position(degrees) + RightMotor.position(degrees))/2; // average of two motors
-      motordistance = (motorposition/360) * 12.56;
-
-      error = target[i] - motordistance;
-      turnamount = LeftMotor.position(degrees) - RightMotor.position(degrees);
-      angleerror = targetangle - turnamount;
-      turnpower = angleerror * 0.5;
+  while(true){
+    if(Vision5.largestObject.exists){
+        if(Vision5.largestObject.originX > 160){
+          LeftMotor.spin(forward, 3, voltageUnits::volt);
+        }
+        else if(Vision5.largestObject.originX < 156){
+          RightMotor.spin(forward, 3, voltageUnits::volt);
+        }
+        else{
+          break;
+        }
+        Brain.Screen.drawRectangle(Vision5.largestObject.originX, Vision5.largestObject.originY, 
+        Vision5.largestObject.width, Vision5.largestObject.width, color::red);
+    }
+    else{
+      LeftMotor.spin(forward, 10, voltageUnits::volt);
     }
   }
+}
+
+void autonomous(void) {
+  // double error;
+
+  // double target[3];
+  // double targetangle;
+  // double turnamount;
+  // double angleerror;
+  // double turnpower;
+  // // in inches
+  // target[0] = 73;
+  // target[1] = 48;
+  // target[2] = 48;
+  // targetangle = (atan(1/6) * 180) / M_PI;
+
+
+  // // diameter of wheel is 4 inches
+  // // circumfrence is about 12.56
+
+
+  // for (int i = 0; i < sizeof(target); i++){
+  //   long motorposition = (LeftMotor.position(degrees) + RightMotor.position(degrees))/2; // average of two motors
+  //   long motordistance = (motorposition/360) * 12.56;
+
+  //   error = target[i] - motordistance;
+  //   turnamount = LeftMotor.position(degrees) - RightMotor.position(degrees);
+  //   angleerror = targetangle - turnamount;
+  //   turnpower = angleerror * 0.5;
+  //   while(error > 0.01 && angleerror > 0.01){
+  //     LeftMotor.spin(forward, 100 * error / target[i] + turnpower, vex::velocityUnits::pct);
+  //     RightMotor.spin(forward, 100 * error / target[i] - turnpower, vex::velocityUnits::pct);
+
+  //     motorposition = (LeftMotor.position(degrees) + RightMotor.position(degrees))/2; // average of two motors
+  //     motordistance = (motorposition/360) * 12.56;
+
+  //     error = target[i] - motordistance;
+  //     turnamount = LeftMotor.position(degrees) - RightMotor.position(degrees);
+  //     angleerror = targetangle - turnamount;
+  //     turnpower = angleerror * 0.5;
+  //   }
+  // }
+
+
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
-  
+
+
+  findColor();  
+
 }
 
 /*---------------------------------------------------------------------------*/
@@ -136,9 +169,9 @@ void usercontrol(void) {
     RightMotor.spin(forward, forwardVolts + turnVolts, voltageUnits::volt);
 
     int control;
-    if (Controller1.ButtonL2.pressing() == true && PotentiometerA.angle(degrees) - InitPointDeg < 250){
+    if (Controller1.ButtonL1.pressing() == true && PotentiometerA.angle(degrees) - InitPointDeg < 250){
         ArmGroup.spin(forward, 150, vex::velocityUnits::pct);
-    }else if (Controller1.ButtonL1.pressing() == true && PotentiometerA.angle(degrees) - InitPointDeg > 0){
+    }else if (Controller1.ButtonL2.pressing() == true && PotentiometerA.angle(degrees) - InitPointDeg > 0){
         control = std::abs(PotentiometerA.angle(degrees) - InitPointDeg) * 0.1;
         ArmGroup.spin(reverse, 150, vex::velocityUnits::pct);
     }else{
@@ -167,6 +200,7 @@ void usercontrol(void) {
 int main() {
     // Run the pre-autonomous function.
   pre_auton();
+  autonomous();
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
