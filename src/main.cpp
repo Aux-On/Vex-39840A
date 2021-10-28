@@ -38,6 +38,7 @@ int32_t InitPointDeg;
 /*---------------------------------------------------------------------------*/
 motor LeftMotor = motor(PORT2);
 motor RightMotor = motor(PORT9);
+int pos = 0;
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
@@ -66,11 +67,15 @@ void findColor(){
 
   while(true){
     if(Vision5.largestObject.exists){
-        if(Vision5.largestObject.originX > 160){
+        LeftMotor.stop(brakeType::hold);
+        RightMotor.stop(brakeType::hold);
+        if(Vision5.largestObject.originX > 316/2+2){
           LeftMotor.spin(forward, 3, voltageUnits::volt);
+          pos += 3;
         }
-        else if(Vision5.largestObject.originX < 156){
+        else if(Vision5.largestObject.originX < 316/2-2){
           RightMotor.spin(forward, 3, voltageUnits::volt);
+          pos -= 3;
         }
         else{
           break;
@@ -80,6 +85,7 @@ void findColor(){
     }
     else{
       LeftMotor.spin(forward, 10, voltageUnits::volt);
+      pos += 10;
     }
   }
 }
