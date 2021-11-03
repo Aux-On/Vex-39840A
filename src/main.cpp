@@ -1,3 +1,11 @@
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Drivetrain           drivetrain    2, 9            
+// Controller1          controller                    
+// ArmGroup             motor_group   1, 10           
+// PotentiometerA       pot           A               
+// ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -142,13 +150,15 @@ void usercontrol(void) {
 
 //////////////////////////////////////////////////
     //int control;
-    /*
+/*
     if (Controller1.ButtonB.pressing() == true){
     if (Controller1.ButtonL2.pressing() == true ){
         ArmGroup.spin(reverse, 150, vex::velocityUnits::pct);
+        ArmGroup.setPosition(0, degrees);
     }else if (Controller1.ButtonL1.pressing() == true){
         //control = std::abs(PotentiometerA.angle(degrees) - InitPointDeg) * 0.1;
         ArmGroup.spin(forward, 150, vex::velocityUnits::pct);
+        ArmGroup.setPosition(0, degrees);
     }else{
       ArmGroup.stop();
     }
@@ -156,9 +166,10 @@ void usercontrol(void) {
 
     }
     */
+  
 //////////////////////////////////////////////////////////
 
-    if (Controller1.ButtonL2.pressing() == true && (ArmGroup.position(degrees) > -35 || Controller1.ButtonB.pressing() == true)){
+    if (Controller1.ButtonL2.pressing() == true && (ArmGroup.position(degrees) > -1343.6 || Controller1.ButtonB.pressing() == true)){
         ArmGroup.spin(reverse, 150, vex::velocityUnits::pct);
     }else if (Controller1.ButtonL1.pressing() == true && (ArmGroup.position(degrees) < 0 || Controller1.ButtonB.pressing() == true)){
         //control = std::abs(PotentiometerA.angle(degrees) - InitPointDeg) * 0.1;
