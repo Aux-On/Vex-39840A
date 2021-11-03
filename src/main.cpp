@@ -31,6 +31,9 @@ competition Competition;
 
 //Constants
 double InitPointDeg;
+long usedmotorpos;
+long initmotorpos;
+
 
 // define your global instances of motors and other devices here
 
@@ -125,6 +128,7 @@ void usercontrol(void) {
   // User control code here, inside the loop
   //Settings
   double turnImportance = 1;
+  
 
   while (1) {
     Brain.Screen.print(PotentiometerA.angle(degrees) - InitPointDeg); 
@@ -149,29 +153,18 @@ void usercontrol(void) {
    // std::cout << "Actual Value " << PotentiometerA.angle(degrees) << std::endl;
 
 //////////////////////////////////////////////////
-    //int control;
-/*
-    if (Controller1.ButtonB.pressing() == true){
-    if (Controller1.ButtonL2.pressing() == true ){
-        ArmGroup.spin(reverse, 150, vex::velocityUnits::pct);
-        ArmGroup.setPosition(0, degrees);
-    }else if (Controller1.ButtonL1.pressing() == true){
-        //control = std::abs(PotentiometerA.angle(degrees) - InitPointDeg) * 0.1;
-        ArmGroup.spin(forward, 150, vex::velocityUnits::pct);
-        ArmGroup.setPosition(0, degrees);
-    }else{
-      ArmGroup.stop();
-    }
-    
 
-    }
-    */
-  
+if (Controller1.ButtonB.pressing() == true){
+  initmotorpos = (LeftMotor.position(degrees) + RightMotor.position(degrees))/2;
+}
+
+usedmotorpos = ArmGroup.position(degrees) - initmotorpos;
+
 //////////////////////////////////////////////////////////
 
-    if (Controller1.ButtonL2.pressing() == true && (ArmGroup.position(degrees) > -1343.6 || Controller1.ButtonB.pressing() == true)){
+    if (Controller1.ButtonL2.pressing() == true && (usedmotorpos > -1343.6 || Controller1.ButtonB.pressing() == true)){
         ArmGroup.spin(reverse, 150, vex::velocityUnits::pct);
-    }else if (Controller1.ButtonL1.pressing() == true && (ArmGroup.position(degrees) < 0 || Controller1.ButtonB.pressing() == true)){
+    }else if (Controller1.ButtonL1.pressing() == true && (usedmotorpos < 0 || Controller1.ButtonB.pressing() == true)){
         //control = std::abs(PotentiometerA.angle(degrees) - InitPointDeg) * 0.1;
         ArmGroup.spin(forward, 150, vex::velocityUnits::pct);
     }else{
