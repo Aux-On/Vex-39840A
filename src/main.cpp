@@ -155,7 +155,7 @@ void usercontrol(void) {
 //////////////////////////////////////////////////
 
 if (Controller1.ButtonB.pressing() == true){
-  initmotorpos = (LeftMotor.position(degrees) + RightMotor.position(degrees))/2;
+  initmotorpos = (ArmGroup.position(degrees))/2;
 }
 
 usedmotorpos = ArmGroup.position(degrees) - initmotorpos;
