@@ -162,53 +162,12 @@ default:
 
 
 void autonomous(void) {
-  // double error;
-
-  // double target[3];
-  // double targetangle;
-  // double turnamount;
-  // double angleerror;
-  // double turnpower;
-  // // in inches
-  // target[0] = 73;
-  // target[1] = 48;
-  // target[2] = 48;
-  // targetangle = (atan(1/6) * 180) / M_PI;
-
-
-  // // diameter of wheel is 4 inches
-  // // circumfrence is about 12.56
-
-
-  // for (int i = 0; i < sizeof(target); i++){
-  //   long motorposition = (LeftMotor.position(degrees) + RightMotor.position(degrees))/2; // average of two motors
-  //   long motordistance = (motorposition/360) * 12.56;
-
-  //   error = target[i] - motordistance;
-  //   turnamount = LeftMotor.position(degrees) - RightMotor.position(degrees);
-  //   angleerror = targetangle - turnamount;
-  //   turnpower = angleerror * 0.5;
-  //   while(error > 0.01 && angleerror > 0.01){
-  //     LeftMotor.spin(forward, 100 * error / target[i] + turnpower, vex::velocityUnits::pct);
-  //     RightMotor.spin(forward, 100 * error / target[i] - turnpower, vex::velocityUnits::pct);
-
-  //     motorposition = (LeftMotor.position(degrees) + RightMotor.position(degrees))/2; // average of two motors
-  //     motordistance = (motorposition/360) * 12.56;
-
-  //     error = target[i] - motordistance;
-  //     turnamount = LeftMotor.position(degrees) - RightMotor.position(degrees);
-  //     angleerror = targetangle - turnamount;
-  //     turnpower = angleerror * 0.5;
-  //   }
-  // }
-
 
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
 
-
-  findColor();  
+  autonStages();
 
 }
 
