@@ -116,7 +116,17 @@ void setArmPos(motor_group arm, long setpos, long errorRange){
 
 }
 
-
+void reorientation(double errorRate){
+  long double netCurrentOrientation = RightMotor.position(degrees) - LeftMotor.position(degrees);
+  if(netCurrentOrientation > (0 + errorRate)){
+    RightMotor.spin(reverse, 3, vex::velocityUnits::pct);
+  }
+  else if(netCurrentOrientation < (0 - errorRate)){
+    LeftMotor.spin(forward, 3, vex::velocityUnits::pct);
+  }else{
+    indexstage++;
+  }
+}
 
 
 
@@ -135,6 +145,14 @@ case 1:
     break;
 case 2:
     setArmPos(ArmGroup, -600, 30);
+    break;
+case 3:
+    reorientation(15);
+    break;
+case 4:
+    RightMotor.spin(reverse, 3, vex::velocityUnits::pct);
+    LeftMotor.spin(reverse, 3, vex::velocityUnits::pct);
+    break;
 default:
   ArmGroup.stop();
     break;
