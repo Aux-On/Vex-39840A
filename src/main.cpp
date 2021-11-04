@@ -124,8 +124,6 @@ void setArmPos(motor_group arm, long setpos, long errorRange){
 void autonStages(){
 
 while(true){
-
-
 switch (indexstage)
 {
 case 0:
@@ -140,11 +138,9 @@ case 2:
 default:
     break;
 }
-
-
+}
 }
 
-}
 
 void autonomous(void) {
   // double error;
