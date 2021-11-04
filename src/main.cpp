@@ -73,11 +73,11 @@ void findColor(){
         LeftMotor.stop(brakeType::hold);
         RightMotor.stop(brakeType::hold);
         if(Vision5.largestObject.originX > 316/2+2){
-          LeftMotor.spin(forward, 3, voltageUnits::volt);
+          LeftMotor.spin(forward, 50, vex::velocityUnits::pct);
           pos += 3;
         }
         else if(Vision5.largestObject.originX < 316/2-2){
-          RightMotor.spin(forward, 3, voltageUnits::volt);
+          RightMotor.spin(forward, 50, vex::velocityUnits::pct);
           pos -= 3;
         }
         //else{
@@ -87,7 +87,7 @@ void findColor(){
         Vision5.largestObject.width, Vision5.largestObject.width, color::red);
     }
     else{
-      LeftMotor.spin(forward, 10, voltageUnits::volt);
+      LeftMotor.spin(forward, 25, vex::velocityUnits::pct);
       //pos += 10;
     }
   //}
@@ -119,10 +119,10 @@ void setArmPos(motor_group arm, long setpos, long errorRange){
 void reorientation(double errorRate){
   long double netCurrentOrientation = RightMotor.position(degrees) - LeftMotor.position(degrees);
   if(netCurrentOrientation > (0 + errorRate)){
-    RightMotor.spin(reverse, 3, vex::velocityUnits::pct);
+    RightMotor.spin(reverse, 50, vex::velocityUnits::pct);
   }
   else if(netCurrentOrientation < (0 - errorRate)){
-    LeftMotor.spin(forward, 3, vex::velocityUnits::pct);
+    LeftMotor.spin(forward, 50, vex::velocityUnits::pct);
   }else{
     indexstage++;
   }
