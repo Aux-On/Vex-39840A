@@ -68,7 +68,7 @@ void findColor(){
 
   Vision5.takeSnapshot(Vision5__SIG_1);
 
-  while(true){
+  //while(true){
     if(Vision5.largestObject.exists){
         LeftMotor.stop(brakeType::hold);
         RightMotor.stop(brakeType::hold);
@@ -80,17 +80,17 @@ void findColor(){
           RightMotor.spin(forward, 3, voltageUnits::volt);
           pos -= 3;
         }
-        else{
-          break;
-        }
+        //else{
+        //  break;
+        //}
         Brain.Screen.drawRectangle(Vision5.largestObject.originX, Vision5.largestObject.originY, 
         Vision5.largestObject.width, Vision5.largestObject.width, color::red);
     }
     else{
       LeftMotor.spin(forward, 10, voltageUnits::volt);
-      pos += 10;
+      //pos += 10;
     }
-  }
+  //}
 }
 
 void largestObjXlim(vision colorSensor, int maxXlim){
