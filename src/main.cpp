@@ -38,7 +38,10 @@ int32_t InitPointDeg;
 /*---------------------------------------------------------------------------*/
 motor LeftMotor = motor(PORT2);
 motor RightMotor = motor(PORT9);
+
 int pos = 0;
+int indexstage = 0; //stages of autonomus
+
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
@@ -88,6 +91,59 @@ void findColor(){
       pos += 10;
     }
   }
+}
+
+void largestObjXlim(vision colorSensor, int maxXlim){
+
+if (colorSensor.largestObject.width >= maxXlim){
+  indexstage++;
+}
+
+}
+
+void setArmPos(motor_group arm, long setpos, long errorRange){
+
+  if (arm.position(degrees) > (setpos+errorRange)){
+    arm.spin(reverse, 150, vex::velocityUnits::pct);
+  }
+  if (arm.position(degrees) < (setpos-errorRange)){
+    arm.spin(forward, 150, vex::velocityUnits::pct);
+  }
+  else{
+    arm.stop(brakeType::hold);
+    indexstage++;
+  }
+
+}
+
+
+
+
+
+
+void autonStages(){
+
+while(true){
+
+
+switch (indexstage)
+{
+case 0:
+    setArmPos(ArmGroup, -1340, 30);
+    break;
+case 1:
+    findColor();
+    largestObjXlim(Vision5, 280);
+    break;
+case 2:
+    setArmPos(ArmGroup, -600, 30);
+default:
+    break;
+}
+
+
+}
+
 }
 
 void autonomous(void) {
