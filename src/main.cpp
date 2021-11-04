@@ -136,6 +136,7 @@ case 1:
 case 2:
     setArmPos(ArmGroup, -600, 30);
 default:
+  ArmGroup.stop();
     break;
 }
 }
