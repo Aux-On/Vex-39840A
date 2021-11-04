@@ -23,7 +23,10 @@
 competition Competition;
 
 //Constants
-int32_t InitPointDeg;
+double InitPointDeg;
+long usedmotorpos;
+long initmotorpos;
+double Initarm;
 
 // define your global instances of motors and other devices here
 
@@ -45,7 +48,9 @@ int indexstage = 0; //stages of autonomus
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
+  indexstage = 0;
   InitPointDeg = PotentiometerA.angle(degrees);
+  Initarm = ArmGroup.position(degrees);
 
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
@@ -73,11 +78,11 @@ void findColor(){
         LeftMotor.stop(brakeType::hold);
         RightMotor.stop(brakeType::hold);
         if(Vision5.largestObject.originX > 316/2+2){
-          LeftMotor.spin(forward, 50, vex::velocityUnits::pct);
+          LeftMotor.spin(forward, 100, vex::velocityUnits::pct);
           pos += 3;
         }
         else if(Vision5.largestObject.originX < 316/2-2){
-          RightMotor.spin(forward, 50, vex::velocityUnits::pct);
+          RightMotor.spin(forward, 100, vex::velocityUnits::pct);
           pos -= 3;
         }
         //else{
@@ -87,7 +92,7 @@ void findColor(){
         Vision5.largestObject.width, Vision5.largestObject.width, color::red);
     }
     else{
-      LeftMotor.spin(forward, 25, vex::velocityUnits::pct);
+      LeftMotor.spin(forward, 75, vex::velocityUnits::pct);
       //pos += 10;
     }
   //}
@@ -111,13 +116,13 @@ void setArmPos(motor_group arm, long setpos, long errorRange){
   }
   else{
     arm.stop(brakeType::hold);
-    indexstage++;
+    indexstage = indexstage+1;
   }
 
 }
 
 void reorientation(double errorRate){
-  long double netCurrentOrientation = RightMotor.position(degrees) - LeftMotor.position(degrees);
+  double netCurrentOrientation = RightMotor.position(degrees) - LeftMotor.position(degrees);
   if(netCurrentOrientation > (0 + errorRate)){
     RightMotor.spin(reverse, 50, vex::velocityUnits::pct);
   }
@@ -133,31 +138,31 @@ void reorientation(double errorRate){
 
 void autonStages(){
 
-while(true){
+//while(true){
 switch (indexstage)
 {
-case 0:
+case 1:
     setArmPos(ArmGroup, -1340, 30);
     break;
-case 1:
+case 2:
     findColor();
     largestObjXlim(Vision5, 280);
     break;
-case 2:
+case 3:
     setArmPos(ArmGroup, -600, 30);
     break;
-case 3:
+case 4:
     reorientation(15);
     break;
-case 4:
-    RightMotor.spin(reverse, 3, vex::velocityUnits::pct);
-    LeftMotor.spin(reverse, 3, vex::velocityUnits::pct);
+case 5:
+    RightMotor.spin(reverse, 150, vex::velocityUnits::pct);
+    LeftMotor.spin(reverse, 150, vex::velocityUnits::pct);
     break;
 default:
   ArmGroup.stop();
     break;
 }
-}
+//}
 }
 
 
@@ -167,9 +172,44 @@ void autonomous(void) {
   // Insert autonomous user code here.
   // ..........................................................................
 
-  autonStages();
+  //autonStages();
+  //indexstage = 0;
+/*
+while(true){
+  std::cout << indexstage << std::endl << ArmGroup.position(degrees) << std::endl;
+  
+  if (indexstage == 0){
 
+    //setArmPos(ArmGroup, -1340, 30);
+    if (ArmGroup.position(degrees) > (Initarm - 130)){
+    ArmGroup.spin(reverse, 150, vex::velocityUnits::pct);
+    }
+    else if (ArmGroup.position(degrees) < (Initarm - 150)){
+    ArmGroup.stop(brakeType::hold);
+    indexstage = indexstage+1;
+    }
+  
+
+  }
+  if (indexstage == 1){
+    findColor();
+    largestObjXlim(Vision5, 280);
+  }
+  if (indexstage == 2){
+    setArmPos(ArmGroup, -600, 30);
+  }
+  if (indexstage == 3){
+    reorientation(15);
+  }
+  if (indexstage == 4){
+    RightMotor.spin(reverse, 150, vex::velocityUnits::pct);
+    LeftMotor.spin(reverse, 150, vex::velocityUnits::pct);
+  }
 }
+*/
+}
+
+
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
@@ -185,13 +225,15 @@ void usercontrol(void) {
   // User control code here, inside the loop
   //Settings
   double turnImportance = 1;
+  
 
   while (1) {
-    // Brain.Screen.print(PotentiometerA.angle(degrees) - InitPointDeg); 
-    // Brain.Screen.newLine();
+    Brain.Screen.print(PotentiometerA.angle(degrees) - InitPointDeg); 
+    Brain.Screen.newLine();
 
     //wheel motors
-
+    motor LeftMotor = motor(PORT2);
+    motor RightMotor = motor(PORT9);
 
     //Value of joystick positions
     double turnVal = -Controller1.Axis1.position(percent);
@@ -204,27 +246,28 @@ void usercontrol(void) {
     LeftMotor.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
     RightMotor.spin(forward, forwardVolts + turnVolts, voltageUnits::volt);
 
-    int control;
-    if (Controller1.ButtonL1.pressing() == true && PotentiometerA.angle(degrees) - InitPointDeg < 250){
-        ArmGroup.spin(forward, 150, vex::velocityUnits::pct);
-    }else if (Controller1.ButtonL2.pressing() == true && PotentiometerA.angle(degrees) - InitPointDeg > 0){
-        control = std::abs(PotentiometerA.angle(degrees) - InitPointDeg) * 0.1;
+   std::cout << "Motor Degrees:" << ArmGroup.position(degrees) << std::endl;
+   // std::cout << "Actual Value " << PotentiometerA.angle(degrees) << std::endl;
+
+//////////////////////////////////////////////////
+
+if (Controller1.ButtonB.pressing() == true){
+  initmotorpos = (ArmGroup.position(degrees))/2;
+}
+
+usedmotorpos = ArmGroup.position(degrees) - initmotorpos;
+
+//////////////////////////////////////////////////////////
+
+    if (Controller1.ButtonL2.pressing() == true && (usedmotorpos > -1343.6 || Controller1.ButtonB.pressing() == true)){
         ArmGroup.spin(reverse, 150, vex::velocityUnits::pct);
+    }else if (Controller1.ButtonL1.pressing() == true && (usedmotorpos < 0 || Controller1.ButtonB.pressing() == true)){
+        //control = std::abs(PotentiometerA.angle(degrees) - InitPointDeg) * 0.1;
+        ArmGroup.spin(forward, 150, vex::velocityUnits::pct);
     }else{
       ArmGroup.stop();
     }
-
-    Brain.Screen.clearScreen();
-    Brain.Screen.setOrigin(1,1);
-    Brain.Screen.drawRectangle(0,0,316,212);
-
-    Vision5.takeSnapshot(Vision5__SIG_1);
-
-    if(Vision5.largestObject.exists){
-        Brain.Screen.drawRectangle(Vision5.largestObject.originX, Vision5.largestObject.originY, 
-        Vision5.largestObject.width, Vision5.largestObject.width, color::red);
-    }
-
+  
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
   }
