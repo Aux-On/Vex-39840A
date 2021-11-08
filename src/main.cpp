@@ -43,14 +43,15 @@ motor LeftMotor = motor(PORT2);
 motor RightMotor = motor(PORT9);
 
 int pos = 0;
-int indexstage = 0; //stages of autonomus
+int indexstage = 1; //stages of autonomus
 
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
-  indexstage = 0;
+  indexstage = 1;
   InitPointDeg = PotentiometerA.angle(degrees);
   Initarm = ArmGroup.position(degrees);
+  ArmGroup.setPosition(0,degrees);
 
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
@@ -77,7 +78,7 @@ void findColor(){
     if(Vision5.largestObject.exists){
         LeftMotor.stop(brakeType::hold);
         RightMotor.stop(brakeType::hold);
-        if(Vision5.largestObject.originX > 316/2+2){
+        if(Vision5.largestObject.originX > 316/2){
           LeftMotor.spin(forward, 100, vex::velocityUnits::pct);
           pos += 3;
         }
@@ -107,12 +108,14 @@ if (colorSensor.largestObject.width >= maxXlim){
 }
 
 void setArmPos(motor_group arm, long setpos, long errorRange){
-
+  std::cout << "1 POS: " <<  arm.position(degrees) << std::endl; 
   if (arm.position(degrees) > (setpos+errorRange)){
-    arm.spin(reverse, 150, vex::velocityUnits::pct);
+    arm.spin(reverse, 100, vex::velocityUnits::pct);
+    std::cout << "1 POS: " <<  arm.position(degrees) << std::endl; 
   }
   if (arm.position(degrees) < (setpos-errorRange)){
-    arm.spin(forward, 150, vex::velocityUnits::pct);
+    arm.spin(forward, 100, vex::velocityUnits::pct);
+    std::cout << "2 POS: " <<  arm.position(degrees) << std::endl; 
   }
   else{
     arm.stop(brakeType::hold);
@@ -138,42 +141,53 @@ void reorientation(double errorRate){
 
 void autonStages(){
 
-//while(true){
+while(true){
 switch (indexstage)
 {
 case 1:
-    setArmPos(ArmGroup, -1340, 30);
+    setArmPos(ArmGroup, -20, 5);
     break;
 case 2:
     findColor();
     largestObjXlim(Vision5, 280);
     break;
 case 3:
-    setArmPos(ArmGroup, -600, 30);
+    setArmPos(ArmGroup, -60, 30);
     break;
 case 4:
     reorientation(15);
     break;
 case 5:
-    RightMotor.spin(reverse, 150, vex::velocityUnits::pct);
-    LeftMotor.spin(reverse, 150, vex::velocityUnits::pct);
+    RightMotor.spin(reverse, 100, vex::velocityUnits::pct);
+    LeftMotor.spin(reverse, 100, vex::velocityUnits::pct);
     break;
 default:
   ArmGroup.stop();
     break;
 }
-//}
+std::cout << "Stage: " << indexstage << std::endl << "Arm motor pos " << ArmGroup.position(degrees) << std::endl;
+}
 }
 
 
 void autonomous(void) {
+  
+  while(true)
+  {
+    LeftMotor.spin(forward, 7, vex::velocityUnits::pct);
+    RightMotor.spin(forward, 7, vex::velocityUnits::pct);
+  }
+  wait(10, seconds);
+
+  //autonStages();
 
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
 
-  //autonStages();
-  //indexstage = 0;
+
+ 
+
 /*
 while(true){
   std::cout << indexstage << std::endl << ArmGroup.position(degrees) << std::endl;
@@ -259,13 +273,13 @@ usedmotorpos = ArmGroup.position(degrees) - initmotorpos;
 
 //////////////////////////////////////////////////////////
 
-    if (Controller1.ButtonL2.pressing() == true && (usedmotorpos > -1343.6 || Controller1.ButtonB.pressing() == true)){
+    if (Controller1.ButtonL2.pressing() == true /*&& (usedmotorpos > -1343.6 || Controller1.ButtonB.pressing() == true)*/){
         ArmGroup.spin(reverse, 150, vex::velocityUnits::pct);
     }else if (Controller1.ButtonL1.pressing() == true && (usedmotorpos < 0 || Controller1.ButtonB.pressing() == true)){
         //control = std::abs(PotentiometerA.angle(degrees) - InitPointDeg) * 0.1;
         ArmGroup.spin(forward, 150, vex::velocityUnits::pct);
     }else{
-      ArmGroup.stop();
+      ArmGroup.stop(brakeType::hold);
     }
   
     wait(20, msec); // Sleep the task for a short amount of time to
@@ -279,7 +293,7 @@ usedmotorpos = ArmGroup.position(degrees) - initmotorpos;
 int main() {
     // Run the pre-autonomous function.
   pre_auton();
-  autonomous();
+  //autonomous();
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
