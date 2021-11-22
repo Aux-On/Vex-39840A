@@ -107,7 +107,7 @@ if (colorSensor.largestObject.width >= maxXlim){
 
 }
 
-void setArmPos(motor_group arm, long setpos, long errorRange){
+void setArmPos(motor_group arm, double setpos, double errorRange){
   std::cout << "1 POS: " <<  arm.position(degrees) << std::endl; 
   if (arm.position(degrees) > (setpos+errorRange)){
     arm.spin(reverse, 100, vex::velocityUnits::pct);
@@ -141,7 +141,6 @@ void reorientation(double errorRate){
 
 void autonStages(){
 
-while(true){
 switch (indexstage)
 {
 case 1:
@@ -165,20 +164,32 @@ default:
   ArmGroup.stop();
     break;
 }
+
 std::cout << "Stage: " << indexstage << std::endl << "Arm motor pos " << ArmGroup.position(degrees) << std::endl;
+
 }
-}
+
 
 
 void autonomous(void) {
-  
+
+  while(true){
+
+    autonStages();
+
+    vex::task::sleep(20);
+  }
+
+
+
+  /*
   while(true)
   {
     LeftMotor.spin(forward, 7, vex::velocityUnits::pct);
     RightMotor.spin(forward, 7, vex::velocityUnits::pct);
   }
   wait(10, seconds);
-
+  */
   //autonStages();
 
   // ..........................................................................
