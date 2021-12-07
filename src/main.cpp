@@ -173,14 +173,21 @@ std::cout << "Stage: " << indexstage << std::endl << "Arm motor pos " << ArmGrou
 
 void autonomous(void) {
 
+  LeftMotor.spin(forward, 20, vex::velocityUnits::pct);
+  RightMotor.spin(forward, 20, vex::velocityUnits::pct);
+  wait(2000,msec);
+  LeftMotor.stop();
+  RightMotor.stop();
+
+
+  /*
   while(true){
 
     autonStages();
 
-    vex::task::sleep(20);
+    wait(20,msec);
   }
-
-
+  */
 
   /*
   while(true)
