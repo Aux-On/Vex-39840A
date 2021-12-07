@@ -141,6 +141,8 @@ void reorientation(double errorRate){
 
 void autonStages(){
 
+while(1){
+  
 switch (indexstage)
 {
 case 1:
@@ -164,8 +166,9 @@ default:
   ArmGroup.stop();
     break;
 }
-
-std::cout << "Stage: " << indexstage << std::endl << "Arm motor pos " << ArmGroup.position(degrees) << std::endl;
+std::cout << "Stage: " << indexstage << std::endl;
+vex::task::sleep(20);
+}
 
 }
 
