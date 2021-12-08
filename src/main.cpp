@@ -41,6 +41,8 @@ double Initarm;
 /*---------------------------------------------------------------------------*/
 motor LeftMotor = motor(PORT2);
 motor RightMotor = motor(PORT9);
+motor ClampMotor = motor(PORT10);
+motor ArmMotor = motor(PORT1);
 
 int pos = 0;
 int indexstage = 1; //stages of autonomus
@@ -294,14 +296,28 @@ usedmotorpos = ArmGroup.position(degrees) - initmotorpos;
 
 //////////////////////////////////////////////////////////
 
-    if (Controller1.ButtonL2.pressing() == true /*&& (usedmotorpos > -1343.6 || Controller1.ButtonB.pressing() == true)*/){
-        ArmGroup.spin(reverse, 150, vex::velocityUnits::pct);
-    }else if (Controller1.ButtonL1.pressing() == true && (usedmotorpos < 0 || Controller1.ButtonB.pressing() == true)){
-        //control = std::abs(PotentiometerA.angle(degrees) - InitPointDeg) * 0.1;
-        ArmGroup.spin(forward, 150, vex::velocityUnits::pct);
-    }else{
-      ArmGroup.stop(brakeType::hold);
+    if (Controller1.ButtonL2.pressing() /*&& (usedmotorpos > -1343.6 || Controller1.ButtonB.pressing() == true)*/){
+        ClampMotor.spin(reverse, 50*0.12, voltageUnits::volt);
+        wait(30,msec);
+        ClampMotor.stop(brakeType::hold);
     }
+    if (Controller1.ButtonL1.pressing() /*&& (usedmotorpos > -1343.6 || Controller1.ButtonB.pressing() == true)*/){
+        ClampMotor.spin(forward, 50*0.12, voltageUnits::volt);
+        wait(20,msec);
+        ClampMotor.stop(brakeType::hold);
+    }
+    if (Controller1.ButtonR2.pressing() /*&& (usedmotorpos > -1343.6 || Controller1.ButtonB.pressing() == true)*/){
+        ArmMotor.spin(reverse, 10*0.12, voltageUnits::volt);
+    }
+    if (Controller1.ButtonR1.pressing() /*&& (usedmotorpos > -1343.6 || Controller1.ButtonB.pressing() == true)*/){
+        ArmMotor.spin(forward, 10*0.12, voltageUnits::volt);
+    }
+    // }else if (Controller1.ButtonL1.pressing() == true && (usedmotorpos < 0 || Controller1.ButtonB.pressing() == true)){
+    //     //control = std::abs(PotentiometerA.angle(degrees) - InitPointDeg) * 0.1;
+    //     ArmGroup.spin(forward, 150, vex::velocityUnits::pct);
+    // }else{
+    //   ArmGroup.stop(brakeType::hold);
+    // }
   
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
