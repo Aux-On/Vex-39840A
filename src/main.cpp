@@ -10,19 +10,22 @@
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
-// Drivetrain           drivetrain    2, 9            
-// Controller1          controller                    
-// ArmGroup             motor_group   1, 10           
-// PotentiometerA       pot           A               
-// Vision5              vision        5               
 // ---- END VEXCODE CONFIGURED DEVICES ----
+
 #include <iostream>
 #include "vex.h"
-#include <cmath> //std::abs
+#include <cmath>
+
 // A global instance of competition
 competition Competition;
 
-//Constants
+controller Controller1 = controller();
+
+motor LeftMotor = motor(PORT2);
+motor RightMotor = motor(PORT9);
+motor ClampMotor = motor(PORT10);
+motor ArmMotor = motor(PORT1);
+
 double InitPointDeg;
 long usedmotorpos;
 long initmotorpos;
@@ -39,21 +42,10 @@ double Initarm;
 /*  function is only called once after the V5 has been powered on and        */
 /*  not every time that the robot is disabled.                               */
 /*---------------------------------------------------------------------------*/
-motor LeftMotor = motor(PORT2);
-motor RightMotor = motor(PORT9);
-motor ClampMotor = motor(PORT10);
-motor ArmMotor = motor(PORT1);
-
-int pos = 0;
-int indexstage = 1; //stages of autonomus
 
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
-  indexstage = 1;
-  InitPointDeg = PotentiometerA.angle(degrees);
-  Initarm = ArmGroup.position(degrees);
-  ArmGroup.setPosition(0,degrees);
 
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
@@ -69,184 +61,17 @@ void pre_auton(void) {
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
-void findColor(){
-  Brain.Screen.clearScreen();
-  Brain.Screen.setOrigin(1,1);
-  Brain.Screen.drawRectangle(0,0,316,212);
-
-  Vision5.takeSnapshot(Vision5__SIG_1);
-
-  //while(true){
-    if(Vision5.largestObject.exists){
-        LeftMotor.stop(brakeType::hold);
-        RightMotor.stop(brakeType::hold);
-        if(Vision5.largestObject.originX > 316/2){
-          LeftMotor.spin(forward, 100, vex::velocityUnits::pct);
-          pos += 3;
-        }
-        else if(Vision5.largestObject.originX < 316/2-2){
-          RightMotor.spin(forward, 100, vex::velocityUnits::pct);
-          pos -= 3;
-        }
-        //else{
-        //  break;
-        //}
-        Brain.Screen.drawRectangle(Vision5.largestObject.originX, Vision5.largestObject.originY, 
-        Vision5.largestObject.width, Vision5.largestObject.width, color::red);
-    }
-    else{
-      LeftMotor.spin(forward, 75, vex::velocityUnits::pct);
-      //pos += 10;
-    }
-  //}
-}
-
-void largestObjXlim(vision colorSensor, int maxXlim){
-
-if (colorSensor.largestObject.width >= maxXlim){
-  indexstage++;
-}
-
-}
-
-void setArmPos(motor_group arm, double setpos, double errorRange){
-  std::cout << "1 POS: " <<  arm.position(degrees) << std::endl; 
-  if (arm.position(degrees) > (setpos+errorRange)){
-    arm.spin(reverse, 100, vex::velocityUnits::pct);
-    std::cout << "1 POS: " <<  arm.position(degrees) << std::endl; 
-  }
-  if (arm.position(degrees) < (setpos-errorRange)){
-    arm.spin(forward, 100, vex::velocityUnits::pct);
-    std::cout << "2 POS: " <<  arm.position(degrees) << std::endl; 
-  }
-  else{
-    arm.stop(brakeType::hold);
-    indexstage = indexstage+1;
-  }
-
-}
-
-void reorientation(double errorRate){
-  double netCurrentOrientation = RightMotor.position(degrees) - LeftMotor.position(degrees);
-  if(netCurrentOrientation > (0 + errorRate)){
-    RightMotor.spin(reverse, 50, vex::velocityUnits::pct);
-  }
-  else if(netCurrentOrientation < (0 - errorRate)){
-    LeftMotor.spin(forward, 50, vex::velocityUnits::pct);
-  }else{
-    indexstage++;
-  }
-}
-
-
-
-
-void autonStages(){
-
-while(1){
-  
-switch (indexstage)
-{
-case 1:
-    setArmPos(ArmGroup, -20, 5);
-    break;
-case 2:
-    findColor();
-    largestObjXlim(Vision5, 280);
-    break;
-case 3:
-    setArmPos(ArmGroup, -60, 30);
-    break;
-case 4:
-    reorientation(15);
-    break;
-case 5:
-    RightMotor.spin(reverse, 100, vex::velocityUnits::pct);
-    LeftMotor.spin(reverse, 100, vex::velocityUnits::pct);
-    break;
-default:
-  ArmGroup.stop();
-    break;
-}
-std::cout << "Stage: " << indexstage << std::endl;
-vex::task::sleep(20);
-}
-
-}
-
-
-
 void autonomous(void) {
+  // ..........................................................................
+  // Insert autonomous user code here.
+  // ..........................................................................
 
   LeftMotor.spin(forward, 20, vex::velocityUnits::pct);
   RightMotor.spin(forward, 20, vex::velocityUnits::pct);
   wait(2000,msec);
   LeftMotor.stop();
   RightMotor.stop();
-
-
-  /*
-  while(true){
-
-    autonStages();
-
-    wait(20,msec);
-  }
-  */
-
-  /*
-  while(true)
-  {
-    LeftMotor.spin(forward, 7, vex::velocityUnits::pct);
-    RightMotor.spin(forward, 7, vex::velocityUnits::pct);
-  }
-  wait(10, seconds);
-  */
-  //autonStages();
-
-  // ..........................................................................
-  // Insert autonomous user code here.
-  // ..........................................................................
-
-
- 
-
-/*
-while(true){
-  std::cout << indexstage << std::endl << ArmGroup.position(degrees) << std::endl;
-  
-  if (indexstage == 0){
-
-    //setArmPos(ArmGroup, -1340, 30);
-    if (ArmGroup.position(degrees) > (Initarm - 130)){
-    ArmGroup.spin(reverse, 150, vex::velocityUnits::pct);
-    }
-    else if (ArmGroup.position(degrees) < (Initarm - 150)){
-    ArmGroup.stop(brakeType::hold);
-    indexstage = indexstage+1;
-    }
-  
-
-  }
-  if (indexstage == 1){
-    findColor();
-    largestObjXlim(Vision5, 280);
-  }
-  if (indexstage == 2){
-    setArmPos(ArmGroup, -600, 30);
-  }
-  if (indexstage == 3){
-    reorientation(15);
-  }
-  if (indexstage == 4){
-    RightMotor.spin(reverse, 150, vex::velocityUnits::pct);
-    LeftMotor.spin(reverse, 150, vex::velocityUnits::pct);
-  }
 }
-*/
-}
-
-
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
@@ -265,53 +90,54 @@ void usercontrol(void) {
   
 
   while (1) {
-    Brain.Screen.print(PotentiometerA.angle(degrees) - InitPointDeg); 
-    Brain.Screen.newLine();
-
     //wheel motors
     motor LeftMotor = motor(PORT2);
     motor RightMotor = motor(PORT9);
 
     //Value of joystick positions
-    double turnVal = -Controller1.Axis1.position(percent);
-    double forwardVal = Controller1.Axis3.position(percent);
+    double turnVal = Controller1.Axis3.position(percent);
+    double forwardVal = Controller1.Axis1.position(percent);
 
     //Converts percentage to voltage
-    double turnVolts = turnVal * 0.12;
-    double forwardVolts = forwardVal * 0.12 * (1 - (std::abs(turnVolts)/12.0) * turnImportance);
+    double turnVolts = turnVal * 0.12 * 2;
+    double forwardVolts = forwardVal * 0.12 * 2 * (1 - (std::abs(turnVolts)/12.0) * turnImportance);
 
     LeftMotor.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
     RightMotor.spin(forward, forwardVolts + turnVolts, voltageUnits::volt);
 
-   std::cout << "Motor Degrees:" << ArmGroup.position(degrees) << std::endl;
+  //  std::cout << "Motor Degrees:" << ArmGroup.position(degrees) << std::endl;
    // std::cout << "Actual Value " << PotentiometerA.angle(degrees) << std::endl;
 
 //////////////////////////////////////////////////
 
-if (Controller1.ButtonB.pressing() == true){
-  initmotorpos = (ArmGroup.position(degrees))/2;
-}
+// if (Controller1.ButtonB.pressing() == true){
+//   initmotorpos = (ArmGroup.position(degrees))/2;
+// }
 
-usedmotorpos = ArmGroup.position(degrees) - initmotorpos;
+// usedmotorpos = ArmGroup.position(degrees) - initmotorpos;
 
 //////////////////////////////////////////////////////////
-
-    if (Controller1.ButtonL2.pressing() /*&& (usedmotorpos > -1343.6 || Controller1.ButtonB.pressing() == true)*/){
-        ClampMotor.spin(reverse, 50*0.12, voltageUnits::volt);
-        wait(30,msec);
-        ClampMotor.stop(brakeType::hold);
-    }
-    if (Controller1.ButtonL1.pressing() /*&& (usedmotorpos > -1343.6 || Controller1.ButtonB.pressing() == true)*/){
-        ClampMotor.spin(forward, 50*0.12, voltageUnits::volt);
-        wait(20,msec);
-        ClampMotor.stop(brakeType::hold);
-    }
-    if (Controller1.ButtonR2.pressing() /*&& (usedmotorpos > -1343.6 || Controller1.ButtonB.pressing() == true)*/){
-        ArmMotor.spin(reverse, 10*0.12, voltageUnits::volt);
-    }
-    if (Controller1.ButtonR1.pressing() /*&& (usedmotorpos > -1343.6 || Controller1.ButtonB.pressing() == true)*/){
-        ArmMotor.spin(forward, 10*0.12, voltageUnits::volt);
-    }
+    ClampMotor.spin(reverse, 50 * Controller1.ButtonL2.pressing(), vex::velocityUnits::pct);
+    ClampMotor.spin(forward, 50 * Controller1.ButtonL2.pressing(), vex::velocityUnits::pct);
+    ArmMotor.spin(reverse, 50 * Controller1.ButtonR2.pressing(), vex::velocityUnits::pct);
+    ArmMotor.spin(forward, 50 * Controller1.ButtonR2.pressing(), vex::velocityUnits::pct);
+    
+    // if (Controller1.ButtonL2.pressing()){
+    //     ClampMotor.spin(reverse, 50, vex::velocityUnits::pct);
+    // }
+    // if (Controller1.ButtonL1.pressing() /*&& (usedmotorpos > -1343.6 || Controller1.ButtonB.pressing() == true)*/){
+    //     ClampMotor.spin(forward, 50, vex::velocityUnits::pct);
+    // }
+    // if (Controller1.ButtonR2.pressing() /*&& (usedmotorpos > -1343.6 || Controller1.ButtonB.pressing() == true)*/){
+    //     ArmMotor.spin(reverse, 50, vex::velocityUnits::pct);
+    // }
+    // if (Controller1.ButtonR1.pressing() /*&& (usedmotorpos > -1343.6 || Controller1.ButtonB.pressing() == true)*/){
+    //     ArmMotor.spin(forward, 50, vex::velocityUnits::pct);
+    // }
+    // else{
+    //     ClampMotor.stop(brakeType::hold);
+    //     ArmMotor.stop(brakeType::hold);
+    // }
     // }else if (Controller1.ButtonL1.pressing() == true && (usedmotorpos < 0 || Controller1.ButtonB.pressing() == true)){
     //     //control = std::abs(PotentiometerA.angle(degrees) - InitPointDeg) * 0.1;
     //     ArmGroup.spin(forward, 150, vex::velocityUnits::pct);
@@ -328,12 +154,12 @@ usedmotorpos = ArmGroup.position(degrees) - initmotorpos;
 // Main will set up the competition functions and callbacks.
 //
 int main() {
-    // Run the pre-autonomous function.
-  pre_auton();
-  //autonomous();
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
+
+  // Run the pre-autonomous function.
+  pre_auton();
 
   // Prevent main from exiting with an infinite loop.
   while (true) {
