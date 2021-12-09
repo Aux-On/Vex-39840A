@@ -10,6 +10,10 @@
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
+// LeftMotor            motor         2               
+// RightMotor           motor         9               
+// ClampMotor           motor         10              
+// ArmMotor             motor         1               
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include <iostream>
@@ -91,8 +95,8 @@ void usercontrol(void) {
 
   while (1) {
     //wheel motors
-    motor LeftMotor = motor(PORT2);
-    motor RightMotor = motor(PORT9);
+    // motor LeftMotor = motor(PORT2);
+    // motor RightMotor = motor(PORT9);
 
     //Value of joystick positions
     double turnVal = Controller1.Axis3.position(percent);
