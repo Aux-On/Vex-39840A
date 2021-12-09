@@ -30,10 +30,15 @@ motor RightMotor = motor(PORT9);
 motor ClampMotor = motor(PORT10);
 motor ArmMotor = motor(PORT1);
 
+//Variables
 double InitPointDeg;
 long usedmotorpos;
 long initmotorpos;
 double Initarm;
+
+//Settings
+double DriveSpeedMultiplier = 2; //Increase speed of chassis by a factor of __
+
 
 // define your global instances of motors and other devices here
 
@@ -103,8 +108,8 @@ void usercontrol(void) {
     double forwardVal = Controller1.Axis1.position(percent);
 
     //Converts percentage to voltage
-    double turnVolts = turnVal * 0.12 * 2;
-    double forwardVolts = forwardVal * 0.12 * 2 * (1 - (std::abs(turnVolts)/12.0) * turnImportance);
+    double turnVolts = turnVal * 0.12 * DriveSpeedMultiplier;
+    double forwardVolts = forwardVal * 0.12 * DriveSpeedMultiplier * (1 - (std::abs(turnVolts)/12.0) * turnImportance);
 
     LeftMotor.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
     RightMotor.spin(forward, forwardVolts + turnVolts, voltageUnits::volt);
