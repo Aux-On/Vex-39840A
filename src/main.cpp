@@ -10,10 +10,12 @@
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
-// LeftMotor            motor         2               
-// RightMotor           motor         9               
+// LeftMotor            motor         9               
+// RightMotor           motor         2               
 // ClampMotor           motor         10              
-// ArmMotor             motor         1               
+// RightArm             motor         1               
+// Controller1          controller                    
+// LeftArm              motor         8               
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include <iostream>
@@ -23,12 +25,8 @@
 // A global instance of competition
 competition Competition;
 
-controller Controller1 = controller();
 
-motor LeftMotor = motor(PORT2);
-motor RightMotor = motor(PORT9);
-motor ClampMotor = motor(PORT10);
-motor ArmMotor = motor(PORT1);
+
 
 //Variables
 double InitPointDeg;
@@ -37,7 +35,7 @@ long initmotorpos;
 double Initarm;
 
 //Settings
-double DriveSpeedMultiplier = 2; //Increase speed of chassis by a factor of __
+double DriveSpeedMultiplier = 1; //Increase speed of chassis by a factor of __
 
 
 // define your global instances of motors and other devices here
@@ -75,9 +73,9 @@ void autonomous(void) {
   // Insert autonomous user code here.
   // ..........................................................................
 
-  LeftMotor.spin(forward, 20, vex::velocityUnits::pct);
-  RightMotor.spin(forward, 20, vex::velocityUnits::pct);
-  wait(2000,msec);
+  LeftMotor.spin(forward, 100, vex::velocityUnits::pct);
+  RightMotor.spin(forward, 100, vex::velocityUnits::pct);
+  wait(15000,msec);
   LeftMotor.stop();
   RightMotor.stop();
 }
@@ -108,32 +106,38 @@ void usercontrol(void) {
     double forwardVal = Controller1.Axis1.position(percent);
 
     //Converts percentage to voltage
-    double turnVolts = turnVal * 0.12 * DriveSpeedMultiplier;
-    double forwardVolts = forwardVal * 0.12 * DriveSpeedMultiplier * (1 - (std::abs(turnVolts)/12.0) * turnImportance);
+    double turnVolts = turnVal * DriveSpeedMultiplier;
+    double forwardVolts = forwardVal * DriveSpeedMultiplier /** (1 - (std::abs(turnVolts)/12.0) * turnImportance )*/ ;
 
-    LeftMotor.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
-    RightMotor.spin(forward, forwardVolts + turnVolts, voltageUnits::volt);
+    LeftMotor.spin(forward, forwardVolts - turnVolts, vex::velocityUnits::pct);
+    RightMotor.spin(forward, forwardVolts + turnVolts, vex::velocityUnits::pct);
 
-  //  std::cout << "Motor Degrees:" << ArmGroup.position(degrees) << std::endl;
-   // std::cout << "Actual Value " << PotentiometerA.angle(degrees) << std::endl;
 
-//////////////////////////////////////////////////
 
-// if (Controller1.ButtonB.pressing() == true){
-//   initmotorpos = (ArmGroup.position(degrees))/2;
-// }
 
-// usedmotorpos = ArmGroup.position(degrees) - initmotorpos;
-
-//////////////////////////////////////////////////////////
-    ClampMotor.spin(reverse, 50 * Controller1.ButtonL2.pressing(), vex::velocityUnits::pct);
-    ClampMotor.spin(forward, 50 * Controller1.ButtonL2.pressing(), vex::velocityUnits::pct);
-    ArmMotor.spin(reverse, 50 * Controller1.ButtonR2.pressing(), vex::velocityUnits::pct);
-    ArmMotor.spin(forward, 50 * Controller1.ButtonR2.pressing(), vex::velocityUnits::pct);
+    //ClampMotor.spin(reverse, 50 * Controller1.ButtonL2.pressing(), vex::velocityUnits::pct);
+    //ClampMotor.spin(forward, 50 * Controller1.ButtonL1.pressing(), vex::velocityUnits::pct);
+    //ArmMotor.spin(reverse, 50 * Controller1.ButtonR2.pressing(), vex::velocityUnits::pct);
+    //ArmMotor.spin(forward, 50 * Controller1.ButtonR1.pressing(), vex::velocityUnits::pct);
     
-    // if (Controller1.ButtonL2.pressing()){
-    //     ClampMotor.spin(reverse, 50, vex::velocityUnits::pct);
-    // }
+     if (Controller1.ButtonL2.pressing()){
+        ClampMotor.spin(reverse, 50, vex::velocityUnits::pct);
+     }else if(Controller1.ButtonL1.pressing()){
+       ClampMotor.spin(forward, 50, vex::velocityUnits::pct);
+     }else{
+       ClampMotor.stop(brakeType::hold);
+     }
+
+     if (Controller1.ButtonR2.pressing()){
+       LeftArm.spin(reverse, 100, vex::velocityUnits::pct); 
+       RightArm.spin(reverse, 100, vex::velocityUnits::pct); 
+     }else if(Controller1.ButtonR1.pressing()){
+       LeftArm.spin(forward, 100, vex::velocityUnits::pct); //left:towards from back vantage point 
+       RightArm.spin(forward, 100, vex::velocityUnits::pct);
+     }else{
+       LeftArm.stop(brakeType::hold);
+       RightArm.stop(brakeType::hold);
+     }
     // if (Controller1.ButtonL1.pressing() /*&& (usedmotorpos > -1343.6 || Controller1.ButtonB.pressing() == true)*/){
     //     ClampMotor.spin(forward, 50, vex::velocityUnits::pct);
     // }
@@ -144,7 +148,7 @@ void usercontrol(void) {
     //     ArmMotor.spin(forward, 50, vex::velocityUnits::pct);
     // }
     // else{
-    //     ClampMotor.stop(brakeType::hold);
+    //     
     //     ArmMotor.stop(brakeType::hold);
     // }
     // }else if (Controller1.ButtonL1.pressing() == true && (usedmotorpos < 0 || Controller1.ButtonB.pressing() == true)){
