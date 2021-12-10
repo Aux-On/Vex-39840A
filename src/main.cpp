@@ -75,6 +75,9 @@ void autonomous(void) {
 
   LeftMotor.spin(forward, 100, vex::velocityUnits::pct);
   RightMotor.spin(forward, 100, vex::velocityUnits::pct);
+  LeftMotor.spin(forward, 100, vex::velocityUnits::pct);
+  RightMotor.spin(forward, 100, vex::velocityUnits::pct);
+
   wait(15000,msec);
   LeftMotor.stop();
   RightMotor.stop();
@@ -106,13 +109,11 @@ void usercontrol(void) {
     double forwardVal = Controller1.Axis1.position(percent);
 
     //Converts percentage to voltage
-    double turnVolts = turnVal * DriveSpeedMultiplier;
-    double forwardVolts = forwardVal * DriveSpeedMultiplier /** (1 - (std::abs(turnVolts)/12.0) * turnImportance )*/ ;
+    double turnVolts = turnVal;
+    double forwardVolts = forwardVal /** (1 - (std::abs(turnVolts)/12.0) * turnImportance )*/;
 
     LeftMotor.spin(forward, forwardVolts - turnVolts, vex::velocityUnits::pct);
     RightMotor.spin(forward, forwardVolts + turnVolts, vex::velocityUnits::pct);
-
-
 
 
     //ClampMotor.spin(reverse, 50 * Controller1.ButtonL2.pressing(), vex::velocityUnits::pct);
