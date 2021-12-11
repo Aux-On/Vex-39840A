@@ -105,8 +105,8 @@ void usercontrol(void) {
     // motor RightMotor = motor(PORT9);
 
     //Value of joystick positions
-    double turnVal = Controller1.Axis3.position(percent);
-    double forwardVal = Controller1.Axis1.position(percent);
+    double turnVal = Controller1.Axis1.position(percent);
+    double forwardVal = Controller1.Axis3.position(percent);
 
     //Converts percentage to voltage
     double turnVolts = turnVal;
